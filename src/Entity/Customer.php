@@ -17,10 +17,10 @@ use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
  * @ORM\Entity(repositoryClass="App\Repository\CustomerRepository")
  * @ApiResource(
  *  collectionOperations={"get", "post"},
-    *  itemOperations={"get", "put", "delete"},
-    *  subresourceOperations={
-    *    "invoices_get_subresource"={"path"="/customers/{id}/invoices"}
-    *  },
+ *  itemOperations={"get", "put", "delete"},
+ *  subresourceOperations={
+ *    "invoices_get_subresource"={"path"="/customers/{id}/invoices"}
+ *  },
  *  normalizationContext={
  *    "groups"={"customers_read"}
  *  }
@@ -102,8 +102,9 @@ class Customer
      *
      * @return float
      */
-    public function getTotalAmount(): float {
-        return array_reduce($this->invoices->toArray(), function($total, $invoice){
+    public function getTotalAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function ($total, $invoice) {
             return $total + $invoice->getAmount();
         }, 0);
     }
@@ -115,10 +116,11 @@ class Customer
      *
      * @return float
      */
-    public function getUnpaidAmount(): float {
-        return array_reduce($this->invoices->toArray(), function($total, $invoice){
-            return $total + ($invoice->getStatus() === 'PAYEE' || $invoice->getStatus() === 'ANNULEE' ? 
-            0 : $invoice->getAmount());
+    public function getUnpaidAmount(): float
+    {
+        return array_reduce($this->invoices->toArray(), function ($total, $invoice) {
+            return $total + ($invoice->getStatus() === 'PAYEE' || $invoice->getStatus() === 'ANNULEE' ?
+                0 : $invoice->getAmount());
         }, 0);
     }
 

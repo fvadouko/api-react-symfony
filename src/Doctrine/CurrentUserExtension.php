@@ -31,13 +31,13 @@ class CurrentUserExtension implements QueryCollectionExtensionInterface, QueryIt
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass)
     {
         $user = $this->security->getUser();
-        if(($resourceClass === Customer::class || $resourceClass === Invoice::class) && !$this->auth->isGranted("ROLE_ADMIN")){
+        if (($resourceClass === Customer::class || $resourceClass === Invoice::class) && !$this->auth->isGranted("ROLE_ADMIN")) {
             $rootAlias = $queryBuilder->getRootAliases()[0];
-            if($resourceClass === Customer::class){
+            if ($resourceClass === Customer::class) {
                 $queryBuilder->andWhere("$rootAlias.user = :user");
-            }else if ($resourceClass === Invoice::class){
+            } else if ($resourceClass === Invoice::class) {
                 $queryBuilder->join("$rootAlias.customer", "c")
-                            ->andWhere("c.user = :user");
+                    ->andWhere("c.user = :user");
             }
 
             $queryBuilder->setParameter("user", $user);
@@ -46,11 +46,11 @@ class CurrentUserExtension implements QueryCollectionExtensionInterface, QueryIt
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, ?string $operationName = null)
     {
-        $this->addWhere($queryBuilder, $resourceClass);
+        //$this->addWhere($queryBuilder, $resourceClass);
     }
 
     public function applyToItem(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, array $identifiers, ?string $operationName = null, array $context = [])
     {
-        $this->addWhere($queryBuilder, $resourceClass);
+        //$this->addWhere($queryBuilder, $resourceClass);
     }
 }

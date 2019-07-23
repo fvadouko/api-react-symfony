@@ -1,8 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useContext, useState } from "react";
 
-import authAPI from "../services/authAPI";
-import CustomersApi from "../services/customersAPI";
+import Field from "../components/forms/Field";
 import AuthContext from "../contexts/AuthContext";
+import authAPI from "../services/authAPI";
 
 const LoginPage = ({ history }) => {
   const { setIsAuthenticated } = useContext(AuthContext);
@@ -36,31 +36,26 @@ const LoginPage = ({ history }) => {
   return (
     <>
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="username">Adresse email</label>
-          <input
-            value={credentials.username}
-            onChange={handleChange}
-            type="email"
-            name="username"
-            id="username"
-            placeholder="Adresse email de connexion à saisir"
-            className={"form-control" + (error && " is-invalid")}
-          />
-          {error && <p className="invalid-feedback">{error}</p>}
-        </div>
-        <div className="form-group">
-          <label htmlFor="password">Mot de passe</label>
-          <input
-            value={credentials.password}
-            onChange={handleChange}
-            type="password"
-            name="password"
-            id="password"
-            placeholder="Mot de passe à saisir"
-            className="form-control"
-          />
-        </div>
+        <Field
+          name="username"
+          id="username"
+          label="Adresse email"
+          value={credentials.username}
+          onChange={handleChange}
+          type="email"
+          placeholder="Adresse email de connexion"
+          error={error}
+        />
+        <Field
+          name="password"
+          id="password"
+          label="Mot de passe"
+          value={credentials.password}
+          onChange={handleChange}
+          type="password"
+          error={error}
+        />
+
         <div className="form-group">
           <button type="submit" className="btn btn-success">
             Je me connecte

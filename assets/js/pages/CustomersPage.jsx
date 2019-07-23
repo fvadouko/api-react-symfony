@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import Pagination from "../components/Pagination";
 import CustomersAPI from "../services/customersAPI";
@@ -13,7 +14,7 @@ const CustomersPage = props => {
       const data = await CustomersAPI.findAll();
       setCustomers(data);
     } catch (error) {
-      console.log("oooooooooooooops !!!!", error.response);
+      // console.log("oooooooooooooops !!!!", error.response);
     }
   };
 
@@ -60,8 +61,12 @@ const CustomersPage = props => {
 
   return (
     <>
-      <h1>Liste des clients</h1>
-
+      <div className="mb-3 d-flex justify-content-between align-items-center">
+        <h1>Liste des clients</h1>
+        <Link to="/clients/nouveau" className="btn btn-primary">
+          Créer un client
+        </Link>
+      </div>
       <div className="form-group">
         <input
           type="text"

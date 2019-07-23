@@ -1,8 +1,9 @@
 import moment from "moment";
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import Pagination from "../components/Pagination";
-import InvoicesAPI from "../services/InvoicesAPI";
+import invoicesAPI from "../services/invoicesAPI";
 
 const STATUS_CLASSES = {
   PAYEE: "success",
@@ -23,7 +24,7 @@ const InvoicesPage = props => {
 
   const fetchInvoices = async () => {
     try {
-      const data = await InvoicesAPI.findAll();
+      const data = await invoicesAPI.findAll();
       setInvoices(data);
     } catch (error) {
       console.log("oooooooooooooops !!!!", error.response);
@@ -44,7 +45,7 @@ const InvoicesPage = props => {
     const originalInvoices = [...invoices];
     setInvoices(invoices.filter(invoice => invoice.id !== id));
     try {
-      await InvoicesAPI.delete(id);
+      await invoicesAPI.delete(id);
     } catch (error) {
       setInvoices(originalInvoices);
       console.log("oooooooooooooops !!!!", error.response);
@@ -76,7 +77,12 @@ const InvoicesPage = props => {
 
   return (
     <>
-      <h1>Liste des factures</h1>
+      <div className="mb-3 d-flex justify-content-between align-items-center">
+        <h1>Liste des facures</h1>
+        <Link to="/factures/nouveau" className="btn btn-primary">
+          Créer une facture
+        </Link>
+      </div>
 
       <div className="form-group">
         <input
@@ -119,7 +125,12 @@ const InvoicesPage = props => {
               </td>
               <td className="text-center">{invoice.amount.toLocaleString()}</td>
               <td>
-                <button className="btn btn-sm btn-primary mr-1">Editer</button>
+                <Link
+                  to={"/factures/" + invoice.id}
+                  className="btn btn-sm btn-primary mr-1"
+                >
+                  Editer
+                </Link>
                 <button
                   onClick={() => handleDelete(invoice.id)}
                   className="btn btn-sm btn-danger"

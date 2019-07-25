@@ -17,7 +17,7 @@ const CustomerPage = ({ match, history }) => {
   });
 
   const [editing, setEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   /**
    * Chargement du customer si besoin au chargement du composant ou au changement de l'identifiant
@@ -106,12 +106,12 @@ const CustomerPage = ({ match, history }) => {
   };
   return (
     <>
+      {loading && <FormContentLoader />}
       {(!editing && <h1>Création d'un client</h1>) || (
         <h1>Modification du client</h1>
       )}
 
-      {loading && FormContentLoader}
-      {loading && (
+      {!loading && (
         <form onSubmit={handleSubmit}>
           <Field
             name="lastname"

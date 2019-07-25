@@ -101,7 +101,7 @@ const CustomersPage = props => {
               <tr key={customer.id}>
                 <td>{customer.id}</td>
                 <td>
-                  <Link to={"/customers/" + invoice.customer.id}>
+                  <Link to={"/clients/" + customer.id}>
                     {customer.firstname} {customer.lastname}
                   </Link>
                 </td>

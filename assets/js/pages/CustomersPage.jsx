@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
+import TableLoader from "../components/Loaders/TableLoader";
 import Pagination from "../components/Pagination";
 import CustomersAPI from "../services/customersAPI";
 
@@ -8,13 +10,15 @@ const CustomersPage = props => {
   const [customers, setCustomers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const fetchCustomers = async () => {
     try {
       const data = await CustomersAPI.findAll();
       setCustomers(data);
+      setLoading(false);
     } catch (error) {
-      // console.log("oooooooooooooops !!!!", error.response);
+      toast.error("Impossible de charger les clients !");
     }
   };
 
@@ -31,11 +35,12 @@ const CustomersPage = props => {
     console.log(id);
     const originalCustomers = [...customers];
     setCustomers(customers.filter(customer => customer.id !== id));
+    toast.success("La client a bien été supprimée !");
     try {
       await CustomersAPI.delete(id);
     } catch (error) {
       setCustomers(originalCustomers);
-      console.log("oooooooooooooops !!!!", error.response);
+      toast.error("Une erreur est survenue !");
     }
   };
 
@@ -90,39 +95,41 @@ const CustomersPage = props => {
           </tr>
         </thead>
 
-        <tbody>
-          {paginatedCustomers.map(customer => (
-            <tr key={customer.id}>
-              <td>{customer.id}</td>
-              <td>
-                <a href="#">
-                  {customer.firstname} {customer.lastname}
-                </a>
-              </td>
-              <td>{customer.email}</td>
-              <td>{customer.company}</td>
-              <td className="text-center">
-                <span className="badge badge-primary">
-                  {customer.invoices.length}
-                </span>
-              </td>
-              <td className="text-center">
-                {customer.totalAmount.toLocaleString()} €
-              </td>
-              <td>
-                <button
-                  onClick={() => handleDelete(customer.id)}
-                  disabled={customer.invoices.length > 0}
-                  className="btn btn-sm btn-danger"
-                >
-                  Supprimer
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+        {!loading && (
+          <tbody>
+            {paginatedCustomers.map(customer => (
+              <tr key={customer.id}>
+                <td>{customer.id}</td>
+                <td>
+                  <Link to={"/customers/" + invoice.customer.id}>
+                    {customer.firstname} {customer.lastname}
+                  </Link>
+                </td>
+                <td>{customer.email}</td>
+                <td>{customer.company}</td>
+                <td className="text-center">
+                  <span className="badge badge-primary">
+                    {customer.invoices.length}
+                  </span>
+                </td>
+                <td className="text-center">
+                  {customer.totalAmount.toLocaleString()} €
+                </td>
+                <td>
+                  <button
+                    onClick={() => handleDelete(customer.id)}
+                    disabled={customer.invoices.length > 0}
+                    className="btn btn-sm btn-danger"
+                  >
+                    Supprimer
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        )}
       </table>
-
+      {loading && <TableLoader />}
       {itemsPerPage < filteredCustomers.length && (
         <Pagination
           currentPage={currentPage}

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import Field from "../components/forms/Field";
 import Select from "../components/forms/Select";
 import customersAPI from "../services/customersAPI";
 import invoicesAPI from "../services/invoicesAPI";
+import FormContentLoader from "../components/Loaders/FormContentLoader";
 
 const InvoicePage = ({ history, match }) => {
   const { id = "nouveau" } = match.params;
@@ -23,6 +25,7 @@ const InvoicePage = ({ history, match }) => {
   const [editing, setEditing] = useState(false);
 
   const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   /**
    * Récupération des clients
@@ -32,8 +35,10 @@ const InvoicePage = ({ history, match }) => {
       const data = await customersAPI.findAll();
       setCustomers(data);
       if (!invoice.customer) setInvoice({ ...invoice, customer: data[0].id });
+      setLoading(false);
     } catch (error) {
-     history.replace("/factures");
+      toast.error("Imposssible de charger les clients !");
+      history.replace("/factures");
     }
   };
 
@@ -45,7 +50,9 @@ const InvoicePage = ({ history, match }) => {
     try {
       const { amount, status, customer } = await invoicesAPI.find(id);
       setInvoice({ amount, status, customer: customer.id });
+      setLoading(false);
     } catch (error) {
+      toast.error("Impossible de charger la facture demandée !");
       history.replace("/factures");
     }
   };
@@ -86,8 +93,10 @@ const InvoicePage = ({ history, match }) => {
     try {
       if (editing) {
         await invoicesAPI.update(id, invoice);
+        toast.success("La facture a bien été modifiée !");
       } else {
         await invoicesAPI.create(invoice);
+        toast.success("La faccture a bien été créée");
         history.replace("/factures");
       }
     } catch ({ response }) {
@@ -97,7 +106,7 @@ const InvoicePage = ({ history, match }) => {
         violations.forEach(({ propertyPath, message }) => {
           apiErrors[propertyPath] = message;
         });
-
+        toast.error("Des erreurs dans votre formulaire !");
         setErrors(apiErrors);
       }
     }
@@ -108,52 +117,54 @@ const InvoicePage = ({ history, match }) => {
       {(!editing && <h1>Création d'une facture</h1>) || (
         <h1>Modification de la facture</h1>
       )}
+      {loading && <FormContentLoader />}
+      {!loading && (
+        <form onSubmit={handleSubmit}>
+          <Field
+            name="amount"
+            label="Montant"
+            type="number"
+            placeholder="Montant de la facture"
+            value={invoice.amount}
+            onChange={handleChange}
+            error={errors.amount}
+          />
 
-      <form onSubmit={handleSubmit}>
-        <Field
-          name="amount"
-          label="Montant"
-          type="number"
-          placeholder="Montant de la facture"
-          value={invoice.amount}
-          onChange={handleChange}
-          error={errors.amount}
-        />
+          <Select
+            name="customer"
+            label="Client"
+            value={invoice.customer}
+            error={errors.customer}
+            onChange={handleChange}
+          >
+            {customers.map(customer => (
+              <option key={customer.id} value={customer.id}>
+                {customer.firstname} {customer.lastname}
+              </option>
+            ))}
+          </Select>
+          <Select
+            name="status"
+            label="Statut"
+            value={invoice.status}
+            error={errors.status}
+            onChange={handleChange}
+          >
+            <option value="ENVOYEE">Envoyée</option>
+            <option value="PAYEE">Payée</option>
+            <option value="ANNULEE">Annulée</option>
+          </Select>
 
-        <Select
-          name="customer"
-          label="Client"
-          value={invoice.customer}
-          error={errors.customer}
-          onChange={handleChange}
-        >
-          {customers.map(customer => (
-            <option key={customer.id} value={customer.id}>
-              {customer.firstname} {customer.lastname}
-            </option>
-          ))}
-        </Select>
-        <Select
-          name="status"
-          label="Statut"
-          value={invoice.status}
-          error={errors.status}
-          onChange={handleChange}
-        >
-          <option value="ENVOYEE">Envoyée</option>
-          <option value="PAYEE">Payée</option>
-          <option value="ANNULEE">Annulée</option>
-        </Select>
-
-        <div className="form-group">
-          <button type="submit" className="btn btn-success">
-            Enregistrer
-          </button>
-          <Link to="/factures" className="btn btn-link">
-            Retour aux factures
-          </Link>
-        </div>
-      </form>
+          <div className="form-group">
+            <button type="submit" className="btn btn-success">
+              Enregistrer
+            </button>
+            <Link to="/factures" className="btn btn-link">
+              Retour aux factures
+            </Link>
+          </div>
+        </form>
+      )}
     </>
   );
 };

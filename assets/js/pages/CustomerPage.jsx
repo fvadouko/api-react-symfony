@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import Field from "../components/forms/Field";
 import customersAPI from "../services/customersAPI";
@@ -17,7 +18,7 @@ const CustomerPage = ({ match, history }) => {
   });
 
   const [editing, setEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   /**
    * Chargement du customer si besoin au chargement du composant ou au changement de l'identifiant

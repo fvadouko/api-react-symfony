@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import Field from "../components/forms/Field";
 import { toast } from "react-toastify";
+import usersAPI from "../services/usersAPI";
 
 const RegisterPage = ({ history }) => {
   const [user, setUser] = useState({
@@ -44,12 +45,13 @@ const RegisterPage = ({ history }) => {
     }
 
     try {
-      await UsersAPI.register(user);
+      await usersAPI.register(user);
 
       setErrors({});
       toast.success("Vous êtes inscrit, vous pouvez vous connecter !");
       history.replace("/login");
     } catch ({ response }) {
+      console.log(error);
       const { violations } = response.data;
       if (violations) {
         violations.forEach(({ propertyPath, message }) => {
